@@ -30,6 +30,7 @@ def main():
         mac_os.install_sublime3()
         mac_os.install_slack()
         mac_os.install_byobu()
+        mac_os.install_iterm2()
     else:
         print('OS not supported')
         sys.exit(-1)
@@ -90,6 +91,7 @@ class MacOS(GenericOS):
 
         self.local_command(['chmod', '+x', 'oh-my-zsh-install.sh'])
         self.local_command(['/bin/bash', 'oh-my-zsh-install.sh'])
+        os.remove('oh-my-zsh-install.sh')
         zsh_home_path = '{}/.zshrc'.format(self.home_path)
         if self.file_exists(zsh_home_path):
             os.remove(zsh_home_path)
@@ -124,6 +126,9 @@ class MacOS(GenericOS):
 
     def install_byobu(self):
         self.local_command(['brew', 'install', 'byobu'])
+
+    def install_iterm2(self):
+        self.local_command(['brew', 'cask', 'install', 'iterm2'])
 
 
 if __name__ == '__main__':
