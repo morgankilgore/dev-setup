@@ -14,7 +14,7 @@ def main():
     operating_system = get_os()
     if operating_system == 'Darwin':
         mac_os = MacOS()
-        mac_os.install_homebrew()
+        #mac_os.install_homebrew()
         mac_os.install_cask()
         mac_os.install_git()
         mac_os.install_python3()
@@ -23,13 +23,12 @@ def main():
         mac_os.install_docker()
         mac_os.install_aws_cli()
         mac_os.install_postman()
-        mac_os.install_zsh()
-        mac_os.install_configure_oh_my_zsh()
-        mac_os.configure_vim()
+        #mac_os.install_zsh()
+        #mac_os.install_configure_oh_my_zsh()
+        #mac_os.configure_vim()
         mac_os.install_chrome()
         mac_os.install_sublime3()
         mac_os.install_slack()
-
     else:
         print('OS not supported')
         sys.exit(-1)
@@ -73,14 +72,16 @@ class MacOS(GenericOS):
 
     def install_configure_oh_my_zsh(self):
         self.local_command(['sh', '-c', '"$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"'])
-        shutil.copy('.zshrc', '{}/.zshrc'.format(os.path.expanduser("~")))
-        self.local_command('source', '~/.zshrc')
+        os.symlink('{}/.zshrc'.format(os.getcwd()), '{}/.zshrc'.format(os.path.expanduser("~")))
+        self.local_command(['source', '{}/.zshrc'.format(os.path.expanduser("~"))])
 
     def configure_vim(self):
-        self.local_command(['git', 'clone', 'https://github.com/VundleVim/Vundle.vim.git', ' ~/.vim/bundle/Vundle.vim'])
-        shutil.copy('.vimrc', '{}/.vimrc'.format(os.path.expanduser("~")))
+        self.local_command(['git', 'clone', 'https://github.com/VundleVim/Vundle.vim.git', '{}/.vim/bundle/Vundle.vim'.format(os.path.expanduser("~"))])
+        os.symlink('{}/.vimrc'.format(os.getcwd()), '{}/.vimrc'.format(os.path.expanduser("~")))
+        self.local_command(['pip3', 'install', 'powerline-status'])
+        self.local_command(['pip3', 'install', 'flake8'])
         self.local_command(['vim', '-c', '"PluginInstall"', '-c', 'qa!'])
-        self.local_command(['source', '~/.vimrc'])
+        self.local_command(['source', '{}/.vimrc'.format(os.path.expanduser("~"))])
 
     def install_chrome(self):
         self.local_command(['brew', 'cask', 'install', 'google-chrome'])
