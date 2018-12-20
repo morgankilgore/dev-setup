@@ -16,6 +16,7 @@ def main():
         mac_os = MacOS()
         mac_os.install_homebrew()
         mac_os.install_cask()
+        mac_os.install_git()
         mac_os.install_python3()
         mac_os.install_virtualenv()
         mac_os.install_spotify()
@@ -89,6 +90,9 @@ class MacOS(GenericOS):
 
     def install_slack(self):
         self.local_command(['brew', 'cask', 'install', 'slack'])
+
+    def install_git(self):
+        self.local_command(['brew', 'install', 'git'])
 
 
 if __name__ == '__main__':
