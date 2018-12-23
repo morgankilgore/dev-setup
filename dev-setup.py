@@ -3,34 +3,54 @@ import subprocess
 import platform
 import sys
 import os
+import argparse
 
 
 def get_os():
     return platform.system()
 
 
-def main():
+def main(args):
     operating_system = get_os()
     if operating_system == 'Darwin':
-        mac_os = MacOS()
-        #mac_os.install_homebrew()
-        mac_os.install_cask()
-        mac_os.install_git()
-        mac_os.install_python3()
-        mac_os.install_virtualenv()
-        mac_os.install_spotify()
-        mac_os.install_docker()
-        mac_os.install_aws_cli()
-        mac_os.install_postman()
-        mac_os.install_zsh()
-        mac_os.install_configure_oh_my_zsh()
-        mac_os.configure_vim()
-        mac_os.install_nerd_fonts()
-        mac_os.install_chrome()
-        mac_os.install_sublime3()
-        mac_os.install_slack()
-        mac_os.install_byobu()
-        mac_os.install_iterm2()
+        mac_os = MacOS(action=args.action, zshrc_path=args.zshrc_path, vimrc_path=args.vimrc_path)
+        if mac_os.action == 'install':
+            #mac_os.install_homebrew()  # noqa 265
+            mac_os.install_cask()
+            mac_os.git()
+            mac_os.python3()
+            mac_os.virtualenv()
+            mac_os.spotify()
+            mac_os.docker()
+            mac_os.aws_cli()
+            mac_os.postman()
+            mac_os.zsh()
+            mac_os.configure_oh_my_zsh()
+            mac_os.configure_vim()
+            mac_os.nerd_fonts()
+            mac_os.chrome()
+            mac_os.sublime3()
+            mac_os.slack()
+            mac_os.byobu()
+            mac_os.iterm2()
+        else:
+            mac_os.virtualenv()
+            mac_os.spotify()
+            mac_os.docker()
+            mac_os.aws_cli()
+            mac_os.postman()
+            mac_os.zsh()
+            mac_os.configure_oh_my_zsh()
+            mac_os.configure_vim()
+            mac_os.nerd_fonts()
+            mac_os.chrome()
+            mac_os.sublime3()
+            mac_os.slack()
+            mac_os.byobu()
+            mac_os.iterm2()
+            mac_os.git()
+            mac_os.python3()
+
     else:
         print('OS not supported')
         sys.exit(-1)
@@ -44,92 +64,149 @@ class GenericOS(object):
     def local_command(self, command):
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = proc.communicate()
+        if stderr:
+            print("Error running '{}' command: {}".format(" ".join(command), stderr))
 
     def file_exists(self, filepath):
         return os.path.isfile(filepath)
 
 
 class MacOS(GenericOS):
+    def __init__(self, action, zshrc_path=None, vimrc_path=None):
+        super(MacOS, self).__init__()
+
+        self.action = action
+
+        if zshrc_path is not None:
+            self.zshrc_path = zshrc_path
+        else:
+            self.zshrc_path = '{}/.zshrc'.format(self.home_path)
+
+        if vimrc_path is not None:
+            self.vimrc_path = vimrc_path
+        else:
+            self.vimrc_path = '{}/.vimrc'.format(self.home_path)
+
     def install_homebrew(self):
+        print('Installing homebrew...')
         self.local_command(['/usr/bin/ruby', '-e', "\"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\""])
 
     def install_cask(self):
+        print('Installing cask...')
         self.local_command(['brew', 'tap', 'caskroom/cask'])
 
-    def install_spotify(self):
-        self.local_command(['brew', 'cask', 'install', 'spotify'])
+    def spotify(self):
+        print('{}ing spotify..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'spotify'])
 
-    def install_docker(self):
-        self.local_command(['brew', 'cask', 'install', 'docker'])
+    def docker(self):
+        print('{}ing docker..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'docker'])
 
-    def install_aws_cli(self):
-        self.local_command(['pip3', 'install', 'awscli'])
+    def aws_cli(self):
+        print('{}ing aws cli..'.format(self.action.capitalize()))
+        self.local_command(['pip3', self.action, 'awscli'])
 
-    def install_python3(self):
-        self.local_command(['brew', 'install', 'python'])
+    def python3(self):
+        print('{}ing python3..'.format(self.action.capitalize()))
+        self.local_command(['brew', self.action, 'python'])
 
-    def install_virtualenv(self):
-        self.local_command(['pip3', 'install', 'virtualenv'])
-        self.local_command(['pip3', 'install', 'virtualenvwrapper'])
+    def virtualenv(self):
+        print('{}ing virtualenv..'.format(self.action.capitalize()))
+        self.local_command(['pip3', self.action, 'virtualenv'])
+        print('{}ing virtualenvwrapper..'.format(self.action.capitalize()))
+        self.local_command(['pip3', self.action, 'virtualenvwrapper'])
 
-    def install_postman(self):
-        self.local_command(['brew', 'cask', 'install', 'postman'])
+    def postman(self):
+        print('{}ing postman..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'postman'])
 
-    def install_zsh(self):
-        self.local_command(['brew', 'install', 'zsh'])
+    def zsh(self):
+        print('{}ing zsh..'.format(self.action.capitalize()))
+        self.local_command(['brew', self.action, 'zsh'])
 
-    def install_configure_oh_my_zsh(self):
-        self.local_command(['brew', 'install', 'wget'])
-        self.local_command(['wget', "https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh", "-O", 'oh-my-zsh-install.sh'])
-        with open('oh-my-zsh-install.sh', 'r') as f:
-            oh_my_zsh_file = f.readlines()
+    def configure_oh_my_zsh(self):
 
-        with open('oh-my-zsh-install.sh', 'w') as f:
-            for line in oh_my_zsh_file:
-                if "env zsh -l" not in line:
-                    f.write(line)
+        if self.action == 'install':
+            print('{}ing wget..'.format(self.action.capitalize()))
+            self.local_command(['brew', self.action, 'wget'])
+            print('{}ing oh-my-zsh..'.format(self.action.capitalize()))
+            self.local_command(['wget', "https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh", "-O", 'oh-my-zsh-install.sh'])
+            with open('oh-my-zsh-install.sh', 'r') as f:
+                oh_my_zsh_file = f.readlines()
 
-        self.local_command(['chmod', '+x', 'oh-my-zsh-install.sh'])
-        self.local_command(['/bin/bash', 'oh-my-zsh-install.sh'])
-        os.remove('oh-my-zsh-install.sh')
-        zsh_home_path = '{}/.zshrc'.format(self.home_path)
-        if self.file_exists(zsh_home_path):
-            os.remove(zsh_home_path)
-        os.symlink('{}/.zshrc'.format(self.current_dir), zsh_home_path)
+            with open('oh-my-zsh-install.sh', 'w') as f:
+                for line in oh_my_zsh_file:
+                    if "env zsh -l" not in line:
+                        f.write(line)
+
+            self.local_command(['chmod', '+x', 'oh-my-zsh-install.sh'])
+            self.local_command(['/bin/bash', 'oh-my-zsh-install.sh'])
+            os.remove('oh-my-zsh-install.sh')
+            if self.file_exists(self.zshrc_path):
+                os.remove(self.zshrc_path)
+
+            os.symlink('{}/.zshrc'.format(self.current_dir), self.zshrc_path)
+
+        elif self.action == 'uninstall':
+            print('{}ing oh-my-zsh..'.format(self.action.capitalize()))
+            self.local_command(['uninstall_oh_my_zsh'])
 
     def configure_vim(self):
-        self.local_command(['git', 'clone', 'https://github.com/VundleVim/Vundle.vim.git', '{}/.vim/bundle/Vundle.vim'.format(self.home_path)])
+        print('{}ing powerline-status..'.format(self.action.capitalize()))
+        self.local_command(['pip3', self.action, 'powerline-status'])
+        print('{}ing flake8..'.format(self.action.capitalize()))
+        self.local_command(['pip3', self.action, 'flake8'])
 
-        vim_home_path = '{}/.vimrc'.format(self.home_path)
-        if self.file_exists(vim_home_path):
-            os.remove(vim_home_path)
-        os.symlink('{}/.vimrc'.format(self.current_dir), vim_home_path)
-        self.local_command(['pip3', 'install', 'powerline-status'])
-        self.local_command(['pip3', 'install', 'flake8'])
-        self.local_command(['vim', '+silent', '+PluginInstall', '+qall'])
+        if self.action == 'install':
+            print('{}ing Vundle..'.format(self.action.capitalize()))
+            self.local_command(['git', 'clone', 'https://github.com/VundleVim/Vundle.vim.git', '{}/.vim/bundle/Vundle.vim'.format(self.home_path)])
 
-    def install_chrome(self):
-        self.local_command(['brew', 'cask', 'install', 'google-chrome'])
+            vim_home_path = '{}/.vimrc'.format(self.home_path)
+            if self.file_exists(vim_home_path):
+                os.remove(vim_home_path)
+            os.symlink('{}/.vimrc'.format(self.current_dir), vim_home_path)
+            self.local_command(['vim', '+silent', '+PluginInstall', '+qall'])
 
-    def install_sublime3(self):
-        self.local_command(['brew', 'cask', 'install', 'sublime-text'])
+        elif self.action == 'uninstall':
+            if self.file_exists(self.vimrc_path):
+                os.remove(self.vimrc_path)
 
-    def install_slack(self):
-        self.local_command(['brew', 'cask', 'install', 'slack'])
+    def chrome(self):
+        print('{}ing chrome..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'google-chrome'])
 
-    def install_git(self):
-        self.local_command(['brew', 'install', 'git'])
+    def sublime3(self):
+        print('{}ing sublime3..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'sublime-text'])
 
-    def install_nerd_fonts(self):
-        self.local_command(['brew', 'tap', 'caskroom/fonts'])
-        self.local_command(['brew', 'cask', 'install', 'font-hack-nerd-font'])
+    def slack(self):
+        print('{}ing slack..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'slack'])
 
-    def install_byobu(self):
-        self.local_command(['brew', 'install', 'byobu'])
+    def git(self):
+        print('{}ing git..'.format(self.action.capitalize()))
+        self.local_command(['brew', self.action, 'git'])
 
-    def install_iterm2(self):
-        self.local_command(['brew', 'cask', 'install', 'iterm2'])
+    def nerd_fonts(self):
+        if self.action == 'install':
+            self.local_command(['brew', 'tap', 'caskroom/fonts'])
+        print('{}ing nerd fonts.'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'font-hack-nerd-font'])
+
+    def byobu(self):
+        print('{}ing byobu..'.format(self.action.capitalize()))
+        self.local_command(['brew', self.action, 'byobu'])
+
+    def iterm2(self):
+        print('{}ing iterm2..'.format(self.action.capitalize()))
+        self.local_command(['brew', 'cask', self.action, 'iterm2'])
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Installs software, tools, etc. needed for a basic dev environment.')
+    parser.add_argument('--action', choices=['install', 'uninstall'], required=True, help='Option either to install or uninstall the basic dev environment.')
+    parser.add_argument('--vimrc-path', required=False, help='Path to vimrc file. Default path is ~/.vimrc')
+    parser.add_argument('--zshrc-path', required=False, help='Path to zshrc file. Default path is ~/.zshrc')
+    args = parser.parse_args()
+    main(args)
