@@ -17,7 +17,7 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'powerline/powerline', {'rtp': 'powerline/bindings/vim/'}
+"Plugin 'powerline/powerline', {'rtp': 'powerline/bindings/vim/'}
 
 " " All of your Plugins must be added before the following line
  call vundle#end()            " required

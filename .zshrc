@@ -63,7 +63,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=( git docker virtualenv virtualenvwrapper )
+plugins=( git docker docker-compose virtualenvwrapper )
 
 source $ZSH/oh-my-zsh.sh
 
@@ -96,6 +96,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Virtualenvwrapper
+export VIRTUAL_ENV_DISABLE_PROMPT=0
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/source-code
